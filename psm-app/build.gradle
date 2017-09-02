@@ -261,7 +261,19 @@ project(':integration-tests') {
     }
 
     test {
-        environment "DISPLAY", System.getenv('XVFB_DISPLAY')
-        systemProperty "webdriver.firefox.bin", System.getenv('FIREFOX_HOME')
+        // environment "DISPLAY", System.getenv('XVFB_DISPLAY')
+        // username = System.getenv("SAUCE_USERNAME")
+        // access_key = System.getenv("SAUCE_ACCESS_KEY")
+        // capabilities["tunnel-identifier"] = System.getenv("TRAVIS_JOB_NUMBER")
+        // hub_url = "%s:%s@localhost:4445" % (username, access_key)
+        // driver = webdriver.Remote(desired_capabilities=capabilities, command_executor="https://%s/wd/hub" % hub_url)
+        // systemProperty "webdriver.driver", "remote"
+        systemProperty "saucelabs.url", "http://" + System.getenv("SAUCELABS_ACCESS_KEY") + ":" + System.getenv("SAUCELABS_USERNAME") + "@localhost:4445"
+        systemProperty "saucelabs.target.platform", "WIN10" // See: https://github.com/SeleniumHQ/selenium/blob/master/java/client/src/org/openqa/selenium/Platform.java
+        systemProperty "webdriver.driver", "firefox"
+        systemProperty "saucelabs.driver.version", "49"
+        systemProperty "serenity.driver.capabilities", "tunnel-identifier:" + System.getenv("TRAVIS_JOB_NUMBER")
+
+        // systemProperty "webdriver.firefox.bin", System.getenv('FIREFOX_HOME')
     }
 }

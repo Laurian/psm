@@ -6,6 +6,10 @@ services:
   - postgresql
 addons:
   postgresql: "9.6"
+  firefox: "49.0"
+  sauce_connect:
+    username: ${SAUCELABS_USERNAME}
+    access_key: ${SAUCELABS_ACCESS_KEY}
 
 cache:
   directories:
@@ -14,10 +18,15 @@ cache:
 # We depend on a WildFly deployment for some of the production
 # .jar files. Download it and install just above our repo.
 before_script:
+  # - "export DISPLAY=:99"
+  # - "export XVFB_DISPLAY=:99"
+  # - "sh -e /etc/init.d/xvfb start"
+  # - sleep 3 # give xvfb some time to start
   - wget http://download.jboss.org/wildfly/10.1.0.Final/wildfly-10.1.0.Final.tar.gz -O /tmp/wildfly-10.1.0.Final.tar.gz
   - pushd ..
   - tar -xvf /tmp/wildfly-10.1.0.Final.tar.gz
   - popd
+  - ./scripts/travis-start-wildfly.sh
 
 install: true
 
@@ -25,7 +34,9 @@ install: true
 script:
   - cd psm-app
   - ./gradlew --no-daemon --console=plain clean cms-portal-services:build cms-web:apiDocs
-  - ../scripts/start-wildfly-deploy-application.sh 
+  - ../scripts/travis-deploy-application.sh
+  # - export FIREFOX_HOME="$HOME/firefox-49.0/firefox/firefox"
+  - ./gradlew --debug --stacktrace test aggregate
   - cd ../
 
 # Push the new Javadocs to our GitHub Pages site.
@@ -34,12 +45,12 @@ after_success:
 
 # Build the Continuous Deployment private key
 before_deploy:
-  - sh scripts/travis-ssh-add.sh
+  - ./scripts/travis-ssh-add.sh
 
 # Continuous Deployment
 deploy:
   provider: script
   skip_cleanup: true
-  script: sh scripts/deploy-ci.sh
+  script: ./scripts/deploy-ci.sh
   on:
     branch: master

@@ -22,7 +22,9 @@ function wait_for_wildfly {
 
 createdb -U postgres psm
 
-${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml > ${WILDFLY_LOG} &
+${WILDFLY_HOME}/bin/standalone.sh -c standalone-full.xml -b 0.0.0.0 > ${WILDFLY_LOG} &
+
+
 
 download_and_sha1 "https://jdbc.postgresql.org/download/postgresql-42.1.1.jar" \
                   8a0b76d763f5382d6357c412eeb14970ba4405f3
@@ -67,17 +69,9 @@ xa-data-source add \
   --password=ignored \
   --xa-datasource-properties=ServerName=localhost,PortNumber=5432,DatabaseName=psm
 EOF
+
+wait_for_wildfly ${WILDFLY_CLI}
+
 ${WILDFLY_CLI} --connect --command="reload"
 ${WILDFLY_CLI} --connect --command="xa-data-source test-connection-in-pool --name=MitaDS"
 ${WILDFLY_CLI} --connect --command="xa-data-source test-connection-in-pool --name=TaskServiceDS"
-${WILDFLY_CLI} --connect --command="deploy ${TRAVIS_BUILD_DIR}/psm-app/cms-portal-services/build/libs/cms-portal-services.ear"
-
-python -m smtpd -n -c DebuggingServer localhost:1025 &
-PYTHON_SMTPD_PID=$!
-
-curl -v "http://localhost:8080/cms"
-
-${WILDFLY_CLI} --connect --command="shutdown"
-kill ${PYTHON_SMTPD_PID}
-
-cat ${WILDFLY_LOG}
