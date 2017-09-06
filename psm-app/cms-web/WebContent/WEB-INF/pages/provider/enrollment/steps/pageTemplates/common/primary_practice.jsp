@@ -4,17 +4,17 @@
 <div class="row">
     <label>Primary Practice Name</label>
     <span class="floatL"><b>:</b></span>
-    <span>${requestScope['_06_name']}</span>
+    <span id="primaryPracticeName">${requestScope['_06_name']}</span>
 </div>
 <div class="row">
     <label>Group NPI/UMPI</label>
     <span class="floatL"><b>:</b></span>
-    <span>${requestScope['_06_npi']}</span>
+    <span id="groupNPI">${requestScope['_06_npi']}</span>
 </div>
 <div class="row">
     <label>Effective Date</label>
     <span class="floatL"><b>:</b></span>
-    <span>${requestScope['_06_effectiveDate']}</span>
+    <span id="effectiveDate">${requestScope['_06_effectiveDate']}</span>
 </div>
 <div class="row">
     <label>Practice Address</label>
@@ -30,7 +30,7 @@
 <div class="row">
     <label>Practice Phone Number</label>
     <span class="floatL"><b>:</b></span>
-    <span>
+    <span id="practicePhoneNumber">
     ${requestScope['_06_phone1']}<c:if test="${requestScope['_06_phone2'] ne ''}"> - </c:if>${requestScope['_06_phone2']}<c:if test="${requestScope['_06_phone3'] ne ''}"> - </c:if>${requestScope['_06_phone3']}<c:if test="${requestScope['_06_phone4'] ne ''}"> ext. </c:if>${requestScope['_06_phone4']}
     </span>
 </div>
@@ -39,7 +39,7 @@
     <span class="floatL"><b>:</b></span>
     <c:set var="formName" value="_06_faxNumber"></c:set>
     <c:set var="formValue" value="${requestScope[formName]}"></c:set>
-    <span>
+    <span id="practiceFaxNumber">
     ${requestScope['_06_fax1']}<c:if test="${requestScope['_06_fax2'] ne ''}"> - </c:if>${requestScope['_06_fax2']}<c:if test="${requestScope['_06_fax3'] ne ''}"> - </c:if>${requestScope['_06_fax3']}
     </span>
 </div>
@@ -47,7 +47,7 @@
     <label>Reimbursement Address</label>
     <span class="floatL"><b>:</b></span>
     <c:if test="${requestScope['_06_reimbursementSameAsPrimary'] eq 'Y'}">
-        <span>Same As Above</span>
+        <span id="billingSameAsPrimary">Same As Above</span>
     </c:if>
     <c:if test="${requestScope['_06_reimbursementSameAsPrimary'] ne 'Y'}">
         <h:address name="billing"
